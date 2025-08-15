@@ -5,11 +5,8 @@ local HudManager = {
     isVisible = false,
     currentStats = {
         kills = 0,
-        deaths = 0,
-        assists = 0
-    },
-    lastDamagers = {}, -- Pour tracker les assists
-    damageTimeout = 10000 -- 10 secondes pour compter un assist
+        deaths = 0
+    }
 }
 
 -- =========================
@@ -28,7 +25,6 @@ end
 --  Fonctions principales
 -- =========================
 function HudManager.show(arenaName)
-    -- Ne montrer le HUD que si le joueur est dans une arène
     if HudManager.isVisible or not PlayerData or not PlayerData.inArena then return end
     
     HudManager.isVisible = true
@@ -44,7 +40,6 @@ function HudManager.hide()
     
     HudManager.isVisible = false
     HudManager.currentStats = { kills = 0, deaths = 0 }
-    HudManager.lastDamagers = {}
     
     sendHudMessage('hideHud')
     
@@ -52,18 +47,15 @@ function HudManager.hide()
 end
 
 function HudManager.updateStats(kills, deaths)
-    -- Ne mettre à jour que si en arène et HUD visible
     if not HudManager.isVisible or not PlayerData or not PlayerData.inArena then return end
     
     HudManager.currentStats.kills = kills or 0
     HudManager.currentStats.deaths = deaths or 0
-    HudManager.currentStats.kda = HudManager.currentStats.deaths > 0 and (HudManager.currentStats.kills / HudManager.currentStats.deaths) or HudManager.currentStats.kills
     
     sendHudMessage('updateStats', HudManager.currentStats)
 end
 
 function HudManager.addKill()
-    -- Ne compter les kills que si en arène
     if not HudManager.isVisible or not PlayerData or not PlayerData.inArena then return end
     
     HudManager.currentStats.kills = HudManager.currentStats.kills + 1
@@ -73,7 +65,6 @@ function HudManager.addKill()
 end
 
 function HudManager.addDeath()
-    -- Ne compter les morts que si en arène
     if not HudManager.isVisible or not PlayerData or not PlayerData.inArena then return end
     
     HudManager.currentStats.deaths = HudManager.currentStats.deaths + 1

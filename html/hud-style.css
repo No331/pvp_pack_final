@@ -145,7 +145,6 @@ body {
     border-left-color: #ff4444;
 }
 
-.stat-item.assists,
 .stat-item.kda {
     border-left-color: #ffaa00;
 }
@@ -176,7 +175,6 @@ body {
     filter: brightness(1.2) sepia(1) hue-rotate(0deg) saturate(2);
 }
 
-.assists .stat-icon img,
 .kda .stat-icon img {
     filter: brightness(1.2) sepia(1) hue-rotate(30deg) saturate(2);
 }
@@ -190,7 +188,6 @@ body {
     filter: brightness(1.5) sepia(1) hue-rotate(0deg) saturate(3);
 }
 
-.assists:hover .stat-icon img,
 .kda:hover .stat-icon img {
     filter: brightness(1.5) sepia(1) hue-rotate(30deg) saturate(3);
 }

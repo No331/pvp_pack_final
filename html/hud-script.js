@@ -17,9 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let isVisible = false;
 
-    // Nom de la ressource
-    const resourceName = 'pvp_pack';
-
     // Écouter les messages de FiveM
     window.addEventListener('message', function(event) {
         const data = event.data;
