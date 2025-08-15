@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (data.action === 'openArenaMenu') {
             console.log('PVP Menu - Ouverture du menu arène');
+            console.log('PVP Menu - Arènes reçues:', data.arenas);
             showMenu();
         } else if (data.action === 'closeArenaMenu') {
             console.log('PVP Menu - Fermeture du menu arène');
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.style.overflow = 'auto';
         
         // Envoyer message à FiveM
-        fetch(`https://${resourceName}/closeMenu`, {
+        fetch(`https://pvp_pack/closeMenu`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -57,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        fetch(`https://${resourceName}/selectArena`, {
+        fetch(`https://pvp_pack/selectArena`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

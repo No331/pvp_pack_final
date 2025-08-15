@@ -124,37 +124,36 @@ function PedManager.startInteractionThread()
     pedThread = true
     
     CreateThread(function()
-        local lastDistance = 999.0
-        
         while pedThread do
             local playerPed = PlayerPedId()
             local coords = GetEntityCoords(playerPed)
             local distance = #(coords - Config.SpawnPoint)
             
-            -- Optimisation: ne traiter que si la distance a changé significativement
-            if math.abs(distance - lastDistance) > 1.0 then
-                lastDistance = distance
+            if distance < 50.0 and not PlayerData.inArena then
+                -- Afficher le marker
+                DrawMarker(1, Config.SpawnPoint.x, Config.SpawnPoint.y, Config.SpawnPoint.z - 1.0, 
+                         0,0,0, 0,0,0, 1.0,1.0,0.2, 50,200,255, 100, false, true, 2, false, nil, nil, false)
                 
-                if distance < 50.0 then
-                    if not PlayerData.inArena then
-                        DrawMarker(1, Config.SpawnPoint.x, Config.SpawnPoint.y, Config.SpawnPoint.z - 1.0, 
-                                 0,0,0, 0,0,0, 1.0,1.0,0.2, 50,200,255, 100, false, true, 2, false, nil, nil, false)
-                        
-                        if distance < Config.InteractDistance then
-                            SetTextComponentFormat('STRING')
-                            AddTextComponentString('Appuyez sur ~INPUT_CONTEXT~ pour rejoindre une arène PvP')
-                            DisplayHelpTextFromStringLabel(0,0,1,-1)
-                            
-                            if IsControlJustReleased(0, 38) then
-                                print("^3[PVP] Ouverture du menu arène^0")
-                                TriggerEvent('pvp:openArenaMenu')
-                            end
-                        end
+                if distance < Config.InteractDistance then
+                    -- Afficher le texte d'aide
+                    BeginTextCommandDisplayHelp('STRING')
+                    AddTextComponentSubstringPlayerName('Appuyez sur ~INPUT_CONTEXT~ pour rejoindre une arène PvP')
+                    EndTextCommandDisplayHelp(0, false, true, -1)
+                    
+                    -- Vérifier l'input
+                    if IsControlJustReleased(0, 38) then -- E key
+                        print("^3[PVP] Tentative d'ouverture du menu arène^0")
+                        SetNuiFocus(true, true)
+                        SendNUIMessage({ 
+                            action = "openArenaMenu", 
+                            arenas = Config.Arenas 
+                        })
+                        print("^2[PVP] Menu arène ouvert^0")
                     end
                 end
             end
             
-            Wait(PlayerData.inArena and 500 or 100) -- Moins fréquent si en arène
+            Wait(0) -- Nécessaire pour l'interaction fluide
         end
     end)
 end
@@ -314,15 +313,6 @@ end
 -- =========================
 --  Événements réseau
 -- =========================
-RegisterNetEvent('pvp:openArenaMenu', function()
-    print("^3[PVP] Événement openArenaMenu reçu^0")
-    SetNuiFocus(true, true)
-    SendNUIMessage({ 
-        action = "openArenaMenu", 
-        arenas = Config.Arenas 
-    })
-end)
-
 RegisterNetEvent('pvp:forceJoinClient', function(arenaIndex, arenaData)
     print("^2[PVP] Événement forceJoinClient reçu - Index: " .. arenaIndex .. "^0")
     ArenaManager.join(arenaIndex, arenaData)
@@ -382,6 +372,8 @@ RegisterCommand("pvp_debug", function()
     print("  - PNJ existe: " .. tostring(GameObjects.gunfightPed ~= nil))
     print("  - Thread PNJ: " .. tostring(pedThread))
     print("  - Thread arène: " .. tostring(arenaThread))
+    print("  - Distance du PNJ: " .. tostring(#(GetEntityCoords(PlayerPedId()) - Config.SpawnPoint)))
+    print("  - NUI Focus: " .. tostring(HasNuiFocus()))
 end, false)
 
 -- =========================
