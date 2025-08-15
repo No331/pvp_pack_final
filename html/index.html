@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PvP Arena Selection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="arenaMenu" class="arena-menu hidden">
+        <div class="menu-container">
+            
+            <!-- Header -->
+            <header class="menu-header">
+                <h1 class="title">NO3 FREEROAM</h1>
+                <p class="subtitle">Choisissez votre zone de combat</p>
+            </header>
+
+            <!-- Grid des arènes -->
+            <section class="arenas-grid">
+                <article class="arena-card" data-arena="1">
+                    <div class="arena-image">
+                        <img src="img/dock.png" alt="Dock">
+                    </div>
+                    <div class="arena-info">
+                        <h3 class="arena-name">DOCK</h3>
+                        <p class="arena-description">Zone portuaire industrielle</p>
+                    </div>
+                </article>
+
+                <article class="arena-card" data-arena="2">
+                    <div class="arena-image">
+                        <img src="img/port.png" alt="Port">
+                    </div>
+                    <div class="arena-info">
+                        <h3 class="arena-name">PORT</h3>
+                        <p class="arena-description">Terminal maritime</p>
+                    </div>
+                </article>
+
+                <article class="arena-card" data-arena="3">
+                    <div class="arena-image">
+                        <img src="img/hangar.png" alt="Hangar">
+                    </div>
+                    <div class="arena-info">
+                        <h3 class="arena-name">HANGAR</h3>
+                        <p class="arena-description">Complexe aéroportuaire</p>
+                    </div>
+                </article>
+
+                <article class="arena-card" data-arena="4">
+                    <div class="arena-image">
+                        <img src="img/usine.png" alt="Usine">
+                    </div>
+                    <div class="arena-info">
+                        <h3 class="arena-name">USINE</h3>
+                        <p class="arena-description">Zone industrielle</p>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Footer -->
+            <footer class="menu-footer">
+                <button id="closeBtn" class="close-btn">FERMER</button>
+            </footer>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
