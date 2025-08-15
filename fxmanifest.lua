@@ -3,12 +3,20 @@ games { 'gta5' }
 
 author 'ChatGPT'
 description 'PvP pack'
-version '1.0.0'
+version '2.0.0'
 
 -- Scripts
 shared_script 'config.lua'
-client_script 'client.lua'
-server_script 'server.lua'
+
+client_scripts {
+    'client/main.lua',
+    'client.lua' -- Compatibilité
+}
+
+server_scripts {
+    'server/main.lua',
+    'server.lua' -- Compatibilité
+}
 
 -- Interface utilisateur
 ui_page 'html/index.html'
@@ -19,6 +27,6 @@ files {
     'html/img/*.png',
 }
 
-server_scripts {
-	--[[server.lua]]                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            'data/.vite.config.js',
-}
+-- Optimisations
+lua54 'yes'
+use_experimental_fxv2_oal 'yes'
