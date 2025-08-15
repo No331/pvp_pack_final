@@ -373,7 +373,7 @@ RegisterCommand("pvp_debug", function()
     print("  - Thread PNJ: " .. tostring(pedThread))
     print("  - Thread arène: " .. tostring(arenaThread))
     print("  - Distance du PNJ: " .. tostring(#(GetEntityCoords(PlayerPedId()) - Config.SpawnPoint)))
-    print("  - NUI Focus: " .. tostring(HasNuiFocus()))
+    print("  - NUI Focus: " .. tostring(GetNuiFocus()))
 end, false)
 
 -- =========================
