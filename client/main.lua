@@ -57,52 +57,8 @@ end
 -- =========================
 --  Gestionnaire HUD optimisé
 -- =========================
-local HudManager = {}
-local hudVisible = false
-
-function HudManager.show()
-    if hudVisible then return end
-    hudVisible = true
-    
-    CreateThread(function()
-        while hudVisible and PlayerData.inArena do
-            local ratio = PlayerData.hud.deaths == 0 and PlayerData.hud.kills or 
-                         math.floor((PlayerData.hud.kills / PlayerData.hud.deaths) * 100) / 100
-            
-            -- Optimisation: définir les propriétés du texte une seule fois
-            SetTextFont(4)
-            SetTextScale(Constants.HUD_SCALE, Constants.HUD_SCALE)
-            SetTextColour(255, 255, 255, 255)
-            SetTextOutline()
-            
-            -- Kills
-            SetTextEntry("STRING")
-            AddTextComponentString("🔫 Kills: " .. PlayerData.hud.kills)
-            DrawText(Constants.HUD_POSITION.x, Constants.HUD_POSITION.y)
-            
-            -- Deaths
-            SetTextEntry("STRING")
-            AddTextComponentString("💀 Morts: " .. PlayerData.hud.deaths)
-            DrawText(Constants.HUD_POSITION.x, Constants.HUD_POSITION.y + 0.03)
-            
-            -- KDA
-            SetTextEntry("STRING")
-            AddTextComponentString("📊 KDA: " .. ratio)
-            DrawText(Constants.HUD_POSITION.x, Constants.HUD_POSITION.y + 0.06)
-            
-            Wait(0)
-        end
-    end)
-end
-
-function HudManager.hide()
-    hudVisible = false
-end
-
-function HudManager.update(kills, deaths)
-    PlayerData.hud.kills = kills
-    PlayerData.hud.deaths = deaths
-end
+-- HUD géré par le nouveau système dans hud.lua
+-- Voir client/hud.lua pour la gestion complète du HUD
 
 -- =========================
 --  Gestionnaire vMenu optimisé
@@ -242,8 +198,8 @@ function ArenaManager.join(arenaIndex, arenaData)
     PlayerData.currentArena = arenaIndex
     PlayerData.disableVMenu = true
     
-    HudManager.update(0, 0)
-    HudManager.show()
+    -- Afficher le nouveau HUD
+    TriggerEvent('pvp:hud:show', arenaData.name)
     VMenuManager.enable()
     Utils.toggleAutoSpawn(false)
     
@@ -272,7 +228,8 @@ function ArenaManager.leave()
     PlayerData.currentArena = nil
     arenaThread = false
     
-    HudManager.hide()
+    -- Cacher le HUD
+    TriggerEvent('pvp:hud:hide')
     VMenuManager.disable()
     
     RemoveAllPedWeapons(PlayerPedId(), true)

@@ -72,15 +72,10 @@ function ArenaServerManager.handlePlayerDeath(victim, killerServerId, arenaIndex
     -- Gérer le kill si le tueur est valide
     if killerServerId and killerServerId ~= 0 and PlayerManager.players[killerServerId] then
         PlayerManager.players[killerServerId].kills = PlayerManager.players[killerServerId].kills + 1
-        TriggerClientEvent('pvp:updateHud', killerServerId, 
-                          PlayerManager.players[killerServerId].kills, 
-                          PlayerManager.players[killerServerId].deaths)
+        
+        -- Notifier le nouveau système HUD
+        TriggerClientEvent('pvp:hud:processKill', -1, victim, killerServerId)
     end
-    
-    -- Mettre à jour le HUD de la victime
-    TriggerClientEvent('pvp:updateHud', victim, 
-                      PlayerManager.players[victim].kills, 
-                      PlayerManager.players[victim].deaths)
     
     -- Respawn dans l'arène
     local arena = getArena(arenaIndex)

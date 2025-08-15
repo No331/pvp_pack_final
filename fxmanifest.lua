@@ -10,6 +10,7 @@ shared_script 'config.lua'
 
 client_scripts {
     'client/main.lua',
+    'client/hud.lua',
     'client.lua' -- Compatibilité
 }
 
@@ -19,11 +20,17 @@ server_scripts {
 }
 
 -- Interface utilisateur
-ui_page 'html/index.html'
+ui_page {
+    'html/index.html',
+    'html/hud.html'
+}
 files {
     'html/index.html',
     'html/style.css',
     'html/script.js',
+    'html/hud.html',
+    'html/hud-style.css',
+    'html/hud-script.js',
     'html/img/*.png',
 }
 
