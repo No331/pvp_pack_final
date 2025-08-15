@@ -5,16 +5,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const hudElement = document.getElementById('pvpHud');
     const killsElement = document.getElementById('killsCount');
     const deathsElement = document.getElementById('deathsCount');
-    const assistsElement = document.getElementById('assistsCount');
     const kdaElement = document.getElementById('kdaRatio');
-    const kdaFillElement = document.getElementById('kdaFill');
     const arenaNameElement = document.getElementById('arenaName');
 
     // État du HUD
     let currentStats = {
         kills: 0,
         deaths: 0,
-        assists: 0,
         kda: 0.00
     };
 
@@ -38,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
                 
             case 'updateStats':
-                updateStats(data.kills || 0, data.deaths || 0, data.assists || 0);
+                updateStats(data.kills || 0, data.deaths || 0);
                 break;
                 
             case 'updateKill':
@@ -47,10 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             case 'updateDeath':
                 animateStatUpdate('deaths', data.deaths || 0);
-                break;
-                
-            case 'updateAssist':
-                animateStatUpdate('assists', data.assists || 0);
                 break;
         }
     });
@@ -87,22 +80,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Mettre à jour les statistiques
-    function updateStats(kills, deaths, assists) {
+    function updateStats(kills, deaths) {
         // Vérifier les changements pour les animations
         const killsChanged = kills !== currentStats.kills;
         const deathsChanged = deaths !== currentStats.deaths;
-        const assistsChanged = assists !== currentStats.assists;
 
         // Mettre à jour les valeurs
         currentStats.kills = kills;
         currentStats.deaths = deaths;
-        currentStats.assists = assists;
 
         // Calculer KDA
         calculateKDA();
 
         // Mettre à jour l'affichage
-        updateDisplay(killsChanged, deathsChanged, assistsChanged);
+        updateDisplay(killsChanged, deathsChanged);
     }
 
     // Animation pour une stat spécifique
@@ -116,34 +107,46 @@ document.addEventListener('DOMContentLoaded', function() {
             statValue.textContent = newValue;
             
             // Animation de l'item
-            statItem.classList.add(`${statType.slice(0, -1)}-update`);
+            statItem.classList.add(`${statType === 'kills' ? 'kill' : 'death'}-update`);
             
             // Nettoyer les classes après l'animation
             setTimeout(() => {
                 statValue.classList.remove('updated');
-                statItem.classList.remove(`${statType.slice(0, -1)}-update`);
+                statItem.classList.remove(`${statType === 'kills' ? 'kill' : 'death'}-update`);
             }, 500);
         }
         
         // Mettre à jour les stats internes
         currentStats[statType] = newValue;
         calculateKDA();
-        updateKDADisplay();
     }
 
     // Calculer le ratio KDA
     function calculateKDA() {
-        const { kills, deaths, assists } = currentStats;
+        const { kills, deaths } = currentStats;
         
         if (deaths === 0) {
-            currentStats.kda = kills + assists;
+            currentStats.kda = kills;
         } else {
-            currentStats.kda = parseFloat(((kills + assists) / deaths).toFixed(2));
+            currentStats.kda = parseFloat((kills / deaths).toFixed(2));
         }
+        
+        // Mettre à jour l'affichage KDA
+        kdaElement.textContent = currentStats.kda.toFixed(2);
+        
+        // Changer la couleur selon le ratio
+        let color = '#ff4444'; // Rouge par défaut
+        if (currentStats.kda >= 2.0) {
+            color = '#00ff88'; // Vert pour bon ratio
+        } else if (currentStats.kda >= 1.0) {
+            color = '#ffaa00'; // Orange pour ratio moyen
+        }
+        
+        kdaElement.style.color = color;
     }
 
     // Mettre à jour l'affichage
-    function updateDisplay(killsChanged, deathsChanged, assistsChanged) {
+    function updateDisplay(killsChanged, deathsChanged) {
         // Mettre à jour les compteurs avec animations si nécessaire
         if (killsChanged) {
             killsElement.textContent = currentStats.kills;
@@ -156,34 +159,6 @@ document.addEventListener('DOMContentLoaded', function() {
             deathsElement.classList.add('updated');
             setTimeout(() => deathsElement.classList.remove('updated'), 500);
         }
-        
-        if (assistsChanged) {
-            assistsElement.textContent = currentStats.assists;
-            assistsElement.classList.add('updated');
-            setTimeout(() => assistsElement.classList.remove('updated'), 500);
-        }
-
-        updateKDADisplay();
-    }
-
-    // Mettre à jour l'affichage KDA
-    function updateKDADisplay() {
-        kdaElement.textContent = currentStats.kda.toFixed(2);
-        
-        // Calculer le pourcentage pour la barre (max 5.0 = 100%)
-        const percentage = Math.min((currentStats.kda / 5.0) * 100, 100);
-        kdaFillElement.style.width = percentage + '%';
-        
-        // Changer la couleur selon le ratio
-        let color = '#ff4444'; // Rouge par défaut
-        if (currentStats.kda >= 2.0) {
-            color = '#00ff88'; // Vert pour bon ratio
-        } else if (currentStats.kda >= 1.0) {
-            color = '#ffaa00'; // Orange pour ratio moyen
-        }
-        
-        kdaFillElement.style.background = `linear-gradient(90deg, ${color}, ${color}88)`;
-        kdaElement.style.color = color;
     }
 
     // Reset des statistiques
@@ -191,16 +166,13 @@ document.addEventListener('DOMContentLoaded', function() {
         currentStats = {
             kills: 0,
             deaths: 0,
-            assists: 0,
             kda: 0.00
         };
         
         killsElement.textContent = '0';
         deathsElement.textContent = '0';
-        assistsElement.textContent = '0';
         kdaElement.textContent = '0.00';
-        kdaFillElement.style.width = '0%';
-        arenaNameElement.textContent = 'ARENA';
+        kdaElement.style.color = '#ff4444';
     }
 
     // Initialisation

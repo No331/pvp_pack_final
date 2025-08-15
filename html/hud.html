@@ -15,7 +15,7 @@
             <!-- Header avec titre -->
             <div class="hud-header">
                 <div class="hud-title">
-                    <span class="title-text">PVP ARENA</span>
+                    <span class="title-text" id="arenaName">PVP ARENA</span>
                     <div class="title-underline"></div>
                 </div>
             </div>
@@ -48,32 +48,14 @@
                 <!-- Assists -->
                 <div class="stat-item assists">
                     <div class="stat-icon">
-                        <img src="custom_hud/kd_icon.png" alt="Assists">
+                        <img src="custom_hud/kd_icon.png" alt="KDA">
                     </div>
                     <div class="stat-content">
-                        <div class="stat-label">ASSISTS</div>
-                        <div class="stat-value" id="assistsCount">0</div>
+                        <div class="stat-label">K/D RATIO</div>
+                        <div class="stat-value" id="kdaRatio">0.00</div>
                     </div>
                 </div>
 
-            </div>
-
-            <!-- KDA Ratio -->
-            <div class="kda-container">
-                <div class="kda-label">K/D/A RATIO</div>
-                <div class="kda-value" id="kdaRatio">0.00</div>
-                <div class="kda-bar">
-                    <div class="kda-fill" id="kdaFill"></div>
-                </div>
-            </div>
-
-            <!-- Arena Info -->
-            <div class="arena-info">
-                <div class="arena-name" id="arenaName">ARENA</div>
-                <div class="arena-status">
-                    <div class="status-dot"></div>
-                    <span>ACTIVE</span>
-                </div>
             </div>
 
         </div>
