@@ -224,12 +224,13 @@ function ArenaManager.join(arenaIndex, arenaData)
 end
 
 function ArenaManager.leave()
+    -- Cacher le HUD AVANT de changer le statut
+    TriggerEvent('pvp:hud:hide')
+    
     PlayerData.inArena = false
     PlayerData.currentArena = nil
     arenaThread = false
     
-    -- Cacher le HUD
-    TriggerEvent('pvp:hud:hide')
     VMenuManager.disable()
     
     RemoveAllPedWeapons(PlayerPedId(), true)

@@ -25,6 +25,17 @@ body {
     }
 }
 
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
 @keyframes pulseGlow {
     0%, 100% {
         box-shadow: 0 0 10px rgba(255, 68, 68, 0.3);

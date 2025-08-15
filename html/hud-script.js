@@ -74,11 +74,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isVisible) return;
         
         isVisible = false;
-        hudElement.classList.add('hidden');
         
-        // Reset des stats
-        resetStats();
+        // Animation de sortie avant de cacher
+        hudElement.style.animation = 'slideOutLeft 0.3s ease-in';
         
+        setTimeout(() => {
+            hudElement.classList.add('hidden');
+            // Reset des stats après l'animation
+            resetStats();
+        }, 300);
         console.log('HUD masqué');
     }
 

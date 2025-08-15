@@ -72,7 +72,8 @@ end
 --  Fonctions principales
 -- =========================
 function HudManager.show(arenaName)
-    if HudManager.isVisible then return end
+    -- Ne montrer le HUD que si le joueur est dans une arène
+    if HudManager.isVisible or not PlayerData or not PlayerData.inArena then return end
     
     HudManager.isVisible = true
     HudManager.currentStats = { kills = 0, deaths = 0, assists = 0 }
@@ -95,7 +96,8 @@ function HudManager.hide()
 end
 
 function HudManager.updateStats(kills, deaths, assists)
-    if not HudManager.isVisible then return end
+    -- Ne mettre à jour que si en arène et HUD visible
+    if not HudManager.isVisible or not PlayerData or not PlayerData.inArena then return end
     
     HudManager.currentStats.kills = kills or 0
     HudManager.currentStats.deaths = deaths or 0
@@ -105,7 +107,8 @@ function HudManager.updateStats(kills, deaths, assists)
 end
 
 function HudManager.addKill()
-    if not HudManager.isVisible then return end
+    -- Ne compter les kills que si en arène
+    if not HudManager.isVisible or not PlayerData or not PlayerData.inArena then return end
     
     HudManager.currentStats.kills = HudManager.currentStats.kills + 1
     sendHudMessage('updateKill', { kills = HudManager.currentStats.kills })
@@ -114,7 +117,8 @@ function HudManager.addKill()
 end
 
 function HudManager.addDeath()
-    if not HudManager.isVisible then return end
+    -- Ne compter les morts que si en arène
+    if not HudManager.isVisible or not PlayerData or not PlayerData.inArena then return end
     
     HudManager.currentStats.deaths = HudManager.currentStats.deaths + 1
     sendHudMessage('updateDeath', { deaths = HudManager.currentStats.deaths })
@@ -123,7 +127,8 @@ function HudManager.addDeath()
 end
 
 function HudManager.addAssist()
-    if not HudManager.isVisible then return end
+    -- Ne compter les assists que si en arène
+    if not HudManager.isVisible or not PlayerData or not PlayerData.inArena then return end
     
     HudManager.currentStats.assists = HudManager.currentStats.assists + 1
     sendHudMessage('updateAssist', { assists = HudManager.currentStats.assists })
@@ -144,11 +149,12 @@ end
 -- =========================
 local function startDamageTracking()
     CreateThread(function()
-        local playerPed = PlayerPedId()
-        local playerId = PlayerId()
-        
         while true do
-            if PlayerData.inArena then
+            -- Ne tracker les dégâts que si en arène
+            if PlayerData and PlayerData.inArena then
+                local playerPed = PlayerPedId()
+                local playerId = PlayerId()
+                
                 -- Vérifier si le joueur a infligé des dégâts
                 if HasEntityBeenDamagedByAnyPed(playerPed) then
                     local damager = GetPedSourceOfDeath(playerPed)
