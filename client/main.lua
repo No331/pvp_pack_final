@@ -1,7 +1,7 @@
 -- =========================
 --       Variables globales
 -- =========================
-local PlayerData = {
+PlayerData = {
     inArena = false,
     currentArena = nil,
     isDead = false,
@@ -50,15 +50,11 @@ function Utils.removeArenaBlip()
 end
 
 function Utils.toggleAutoSpawn(state)
-    exports.spawnmanager:setAutoSpawn(state)
-    exports.spawnmanager:setAutoSpawnCallback(function() end)
+    if exports.spawnmanager then
+        exports.spawnmanager:setAutoSpawn(state)
+        exports.spawnmanager:setAutoSpawnCallback(function() end)
+    end
 end
-
--- =========================
---  Gestionnaire HUD optimisé
--- =========================
--- HUD géré par le nouveau système dans hud.lua
--- Voir client/hud.lua pour la gestion complète du HUD
 
 -- =========================
 --  Gestionnaire vMenu optimisé
@@ -78,7 +74,9 @@ function VMenuManager.enable()
             DisableControlAction(0, 166, true) -- F5
             DisableControlAction(0, 167, true) -- F6
             DisableControlAction(0, 289, true) -- F2 Noclip
-            TriggerEvent('vMenu:disableMenu', true)
+            if GetResourceState('vMenu') == 'started' then
+                TriggerEvent('vMenu:disableMenu', true)
+            end
             Wait(0)
         end
     end)
@@ -87,7 +85,9 @@ end
 function VMenuManager.disable()
     vMenuBlocked = false
     PlayerData.disableVMenu = false
-    TriggerEvent('vMenu:disableMenu', false)
+    if GetResourceState('vMenu') == 'started' then
+        TriggerEvent('vMenu:disableMenu', false)
+    end
 end
 
 -- =========================
@@ -112,6 +112,9 @@ function PedManager.init()
             SetEntityInvincible(GameObjects.gunfightPed, true)
             SetBlockingOfNonTemporaryEvents(GameObjects.gunfightPed, true)
             PedManager.startInteractionThread()
+            print("^2[PVP] PNJ créé avec succès^0")
+        else
+            print("^1[PVP] Erreur: Impossible de charger le modèle du PNJ^0")
         end
     end)
 end
@@ -121,10 +124,10 @@ function PedManager.startInteractionThread()
     pedThread = true
     
     CreateThread(function()
-        local playerPed = PlayerPedId()
         local lastDistance = 999.0
         
         while pedThread do
+            local playerPed = PlayerPedId()
             local coords = GetEntityCoords(playerPed)
             local distance = #(coords - Config.SpawnPoint)
             
@@ -143,6 +146,7 @@ function PedManager.startInteractionThread()
                             DisplayHelpTextFromStringLabel(0,0,1,-1)
                             
                             if IsControlJustReleased(0, 38) then
+                                print("^3[PVP] Ouverture du menu arène^0")
                                 TriggerEvent('pvp:openArenaMenu')
                             end
                         end
@@ -166,12 +170,11 @@ function ArenaManager.startBoundaryCheck()
     arenaThread = true
     
     CreateThread(function()
-        local playerPed = PlayerPedId()
-        
         while arenaThread and PlayerData.inArena and PlayerData.currentArena do
             local arena = Config.Arenas[PlayerData.currentArena]
             if not arena then break end
             
+            local playerPed = PlayerPedId()
             local coords = GetEntityCoords(playerPed)
             local distance = #(coords - arena.coord)
             
@@ -180,6 +183,11 @@ function ArenaManager.startBoundaryCheck()
                 SetEntityCoords(playerPed, arena.coord.x, arena.coord.y, arena.coord.z)
                 TriggerEvent('chat:addMessage', { args = {"PvP", "^1Vous ne pouvez pas sortir de la zone !"} })
             end
+            
+            -- Afficher les instructions de sortie
+            SetTextComponentFormat('STRING')
+            AddTextComponentString('Appuyez sur ~INPUT_CONTEXT~ pour quitter l\'arène')
+            DisplayHelpTextFromStringLabel(0,0,1,-1)
             
             -- Vérification de sortie
             if IsControlJustReleased(0, 38) then
@@ -194,11 +202,13 @@ function ArenaManager.startBoundaryCheck()
 end
 
 function ArenaManager.join(arenaIndex, arenaData)
+    print("^2[PVP] Rejoindre arène " .. arenaIndex .. " - " .. arenaData.name .. "^0")
+    
     PlayerData.inArena = true
     PlayerData.currentArena = arenaIndex
     PlayerData.disableVMenu = true
     
-    -- Afficher le nouveau HUD
+    -- Afficher le HUD
     TriggerEvent('pvp:hud:show', arenaData.name)
     VMenuManager.enable()
     Utils.toggleAutoSpawn(false)
@@ -221,9 +231,13 @@ function ArenaManager.join(arenaIndex, arenaData)
     
     TriggerServerEvent('pvp:playerEnteredArena', arenaIndex)
     TriggerEvent('chat:addMessage', { args = {"PvP", "^2Vous avez rejoint l'arène " .. arenaData.name .. " !"} })
+    
+    print("^2[PVP] Arène rejointe avec succès^0")
 end
 
 function ArenaManager.leave()
+    print("^3[PVP] Quitter l'arène^0")
+    
     -- Cacher le HUD AVANT de changer le statut
     TriggerEvent('pvp:hud:hide')
     
@@ -301,11 +315,16 @@ end
 --  Événements réseau
 -- =========================
 RegisterNetEvent('pvp:openArenaMenu', function()
+    print("^3[PVP] Événement openArenaMenu reçu^0")
     SetNuiFocus(true, true)
-    SendNUIMessage({ action = "openArenaMenu", arenas = Config.Arenas })
+    SendNUIMessage({ 
+        action = "openArenaMenu", 
+        arenas = Config.Arenas 
+    })
 end)
 
 RegisterNetEvent('pvp:forceJoinClient', function(arenaIndex, arenaData)
+    print("^2[PVP] Événement forceJoinClient reçu - Index: " .. arenaIndex .. "^0")
     ArenaManager.join(arenaIndex, arenaData)
 end)
 
@@ -313,25 +332,26 @@ RegisterNetEvent('pvp:respawnInArenaClient', function(arenaIndex, arenaData)
     ArenaManager.respawn(arenaIndex, arenaData)
 end)
 
-RegisterNetEvent('pvp:updateHud', function(kills, deaths)
-    HudManager.update(kills, deaths)
-end)
-
 -- =========================
 --  Callbacks NUI
 -- =========================
 RegisterNUICallback("selectArena", function(data, cb)
     local arenaIndex = tonumber(data.index)
+    print("^3[PVP] Callback selectArena - Index: " .. tostring(arenaIndex) .. "^0")
+    
     if arenaIndex and Config.Arenas[arenaIndex] then
+        print("^2[PVP] Arène valide trouvée, envoi au serveur^0")
         TriggerServerEvent("pvp:joinArena", arenaIndex)
         SetNuiFocus(false, false)
         cb("ok")
     else
+        print("^1[PVP] Arène invalide - Index: " .. tostring(arenaIndex) .. "^0")
         cb("error")
     end
 end)
 
 RegisterNUICallback("closeMenu", function(_, cb)
+    print("^3[PVP] Callback closeMenu^0")
     SetNuiFocus(false, false)
     cb("ok")
 end)
@@ -353,10 +373,23 @@ RegisterCommand("noclip", function()
     end
 end, false)
 
+-- Commande de debug
+RegisterCommand("pvp_debug", function()
+    print("^5[PVP DEBUG]^0")
+    print("  - inArena: " .. tostring(PlayerData.inArena))
+    print("  - currentArena: " .. tostring(PlayerData.currentArena))
+    print("  - isDead: " .. tostring(PlayerData.isDead))
+    print("  - PNJ existe: " .. tostring(GameObjects.gunfightPed ~= nil))
+    print("  - Thread PNJ: " .. tostring(pedThread))
+    print("  - Thread arène: " .. tostring(arenaThread))
+end, false)
+
 -- =========================
 --  Initialisation
 -- =========================
 CreateThread(function()
+    Wait(1000) -- Attendre que tout soit chargé
     PedManager.init()
     DeathManager.init()
+    print("^2[PVP] Client initialisé avec succès^0")
 end)

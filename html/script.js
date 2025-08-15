@@ -12,25 +12,27 @@ document.addEventListener('DOMContentLoaded', function() {
     // Écouter les messages de FiveM
     window.addEventListener('message', function(event) {
         const data = event.data;
-        console.log('Message reçu:', data);
+        console.log('PVP Menu - Message reçu:', data);
         
         if (data.action === 'openArenaMenu') {
-            console.log('Ouverture du menu arène');
+            console.log('PVP Menu - Ouverture du menu arène');
             showMenu();
         } else if (data.action === 'closeArenaMenu') {
-            console.log('Fermeture du menu arène');
+            console.log('PVP Menu - Fermeture du menu arène');
             hideMenu();
         }
     });
 
     // Afficher le menu
     function showMenu() {
+        console.log('PVP Menu - Affichage du menu');
         arenaMenu.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
 
     // Cacher le menu
     function hideMenu() {
+        console.log('PVP Menu - Masquage du menu');
         arenaMenu.classList.add('hidden');
         document.body.style.overflow = 'auto';
         
@@ -42,16 +44,16 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             body: JSON.stringify({})
         }).catch(error => {
-            console.error('Erreur fermeture menu:', error);
+            console.error('PVP Menu - Erreur fermeture menu:', error);
         });
     }
 
     // Rejoindre une arène
     function joinArena(arenaIndex) {
-        console.log('Tentative de rejoindre arène:', arenaIndex);
+        console.log('PVP Menu - Tentative de rejoindre arène:', arenaIndex);
         
         if (!arenaIndex || arenaIndex < 1 || arenaIndex > 4) {
-            console.error('Index arène invalide:', arenaIndex);
+            console.error('PVP Menu - Index arène invalide:', arenaIndex);
             return;
         }
         
@@ -64,10 +66,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 index: parseInt(arenaIndex)
             })
         }).then(response => {
-            console.log('Réponse sélection arène:', response.status);
+            console.log('PVP Menu - Réponse sélection arène:', response.status);
             hideMenu();
         }).catch(error => {
-            console.error('Erreur sélection arène:', error);
+            console.error('PVP Menu - Erreur sélection arène:', error);
             hideMenu();
         });
     }
@@ -78,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         card.addEventListener('click', function(e) {
             e.preventDefault();
-            console.log('Carte arène cliquée:', arenaIndex);
+            console.log('PVP Menu - Carte arène cliquée:', arenaIndex);
             joinArena(arenaIndex);
         });
     });
@@ -90,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.stopPropagation();
             const card = e.target.closest('.arena-card');
             const arenaIndex = parseInt(card.dataset.arena);
-            console.log('Bouton rejoindre cliqué:', arenaIndex);
+            console.log('PVP Menu - Bouton rejoindre cliqué:', arenaIndex);
             joinArena(arenaIndex);
         });
     });
@@ -98,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Bouton fermer
     closeBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        console.log('Bouton fermer cliqué');
+        console.log('PVP Menu - Bouton fermer cliqué');
         hideMenu();
     });
 
@@ -116,6 +118,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    console.log('Tous les event listeners ajoutés');
+    console.log('PVP Menu - Tous les event listeners ajoutés');
 });
 
