@@ -155,23 +155,42 @@ body {
     height: 24px;
     margin-right: 12px;
     opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.stat-icon svg {
+.stat-icon img {
     width: 100%;
     height: 100%;
+    object-fit: contain;
+    filter: brightness(1.2);
+    transition: all 0.3s ease;
 }
 
-.kills .stat-icon {
-    color: #00ff88;
+.kills .stat-icon img {
+    filter: brightness(1.2) sepia(1) hue-rotate(90deg) saturate(2);
 }
 
-.deaths .stat-icon {
-    color: #ff4444;
+.deaths .stat-icon img {
+    filter: brightness(1.2) sepia(1) hue-rotate(0deg) saturate(2);
 }
 
-.assists .stat-icon {
-    color: #ffaa00;
+.assists .stat-icon img {
+    filter: brightness(1.2) sepia(1) hue-rotate(30deg) saturate(2);
+}
+
+.stat-item:hover .stat-icon img {
+    filter: brightness(1.5) sepia(1) hue-rotate(90deg) saturate(3);
+    transform: scale(1.1);
+}
+
+.deaths:hover .stat-icon img {
+    filter: brightness(1.5) sepia(1) hue-rotate(0deg) saturate(3);
+}
+
+.assists:hover .stat-icon img {
+    filter: brightness(1.5) sepia(1) hue-rotate(30deg) saturate(3);
 }
 
 .stat-content {

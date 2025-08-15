@@ -32,6 +32,7 @@ files {
     'html/hud-style.css',
     'html/hud-script.js',
     'html/img/*.png',
+    'html/custom_hud/*.png',
 }
 
 -- Optimisations
