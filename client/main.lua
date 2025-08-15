@@ -363,6 +363,32 @@ RegisterCommand("noclip", function()
     end
 end, false)
 
+-- Commande pour forcer la sortie d'arène (debug)
+RegisterCommand("force_quit_pvp", function()
+    print("^3[PVP] Force quit arène^0")
+    ArenaManager.leave()
+end, false)
+
+-- Commande pour reset l'état du joueur
+RegisterCommand("reset_pvp", function()
+    print("^3[PVP] Reset état PVP^0")
+    PlayerData.inArena = false
+    PlayerData.currentArena = nil
+    PlayerData.isDead = false
+    arenaThread = false
+    
+    -- Cacher le HUD
+    TriggerEvent('pvp:hud:hide')
+    
+    -- Réactiver vMenu
+    VMenuManager.disable()
+    
+    -- Téléporter au spawn
+    SetEntityCoords(PlayerPedId(), Constants.SPAWN_COORDS.x, Constants.SPAWN_COORDS.y, Constants.SPAWN_COORDS.z)
+    
+    TriggerEvent('chat:addMessage', { args = {"PvP", "^2État PVP réinitialisé."} })
+end, false)
+
 -- Commande de debug
 RegisterCommand("pvp_debug", function()
     print("^5[PVP DEBUG]^0")
