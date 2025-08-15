@@ -183,18 +183,19 @@ function ArenaManager.startBoundaryCheck()
                 TriggerEvent('chat:addMessage', { args = {"PvP", "^1Vous ne pouvez pas sortir de la zone !"} })
             end
             
-            -- Afficher les instructions de sortie
-            SetTextComponentFormat('STRING')
-            AddTextComponentString('Appuyez sur ~INPUT_CONTEXT~ pour quitter l\'arène')
-            DisplayHelpTextFromStringLabel(0,0,1,-1)
+            -- Afficher les instructions de sortie avec la bonne méthode
+            BeginTextCommandDisplayHelp('STRING')
+            AddTextComponentSubstringPlayerName('Appuyez sur ~INPUT_CONTEXT~ pour quitter l\'arène')
+            EndTextCommandDisplayHelp(0, false, true, -1)
             
             -- Vérification de sortie
             if IsControlJustReleased(0, 38) then
+                print("^3[PVP] Touche E détectée pour quitter l'arène^0")
                 ArenaManager.leave()
                 break
             end
             
-            Wait(200) -- Vérification moins fréquente
+            Wait(0) -- Vérification continue pour la détection des touches
         end
         arenaThread = false
     end)
@@ -351,11 +352,11 @@ end)
 -- =========================
 RegisterCommand("quitpvp", function()
     if PlayerData.inArena then
+        print("^3[PVP] Commande quitpvp utilisée^0")
         ArenaManager.leave()
     else
         TriggerEvent('chat:addMessage', { args = {"PvP", "^1Vous n'êtes pas en PvP."} })
     end
-end)
 
 RegisterCommand("noclip", function()
     if PlayerData.disableVMenu then
@@ -366,6 +367,7 @@ end, false)
 -- Commande pour forcer la sortie d'arène (debug)
 RegisterCommand("force_quit_pvp", function()
     print("^3[PVP] Force quit arène^0")
+    arenaThread = false
     ArenaManager.leave()
 end, false)
 
@@ -386,6 +388,11 @@ RegisterCommand("reset_pvp", function()
     -- Téléporter au spawn
     SetEntityCoords(PlayerPedId(), Constants.SPAWN_COORDS.x, Constants.SPAWN_COORDS.y, Constants.SPAWN_COORDS.z)
     
+    -- Nettoyer les armes et blips
+    RemoveAllPedWeapons(PlayerPedId(), true)
+    Utils.removeArenaBlip()
+    Utils.toggleAutoSpawn(true)
+    
     TriggerEvent('chat:addMessage', { args = {"PvP", "^2État PVP réinitialisé."} })
 end, false)
 
@@ -399,7 +406,17 @@ RegisterCommand("pvp_debug", function()
     print("  - Thread PNJ: " .. tostring(pedThread))
     print("  - Thread arène: " .. tostring(arenaThread))
     print("  - Distance du PNJ: " .. tostring(#(GetEntityCoords(PlayerPedId()) - Config.SpawnPoint)))
-    print("  - NUI Focus: " .. tostring(GetNuiFocus()))
+    local nuiFocus, nuiKeepInput = GetNuiFocus()
+    print("  - NUI Focus: " .. tostring(nuiFocus))
+    if PlayerData.inArena and PlayerData.currentArena then
+        local arena = Config.Arenas[PlayerData.currentArena]
+        if arena then
+            local coords = GetEntityCoords(PlayerPedId())
+            local distance = #(coords - arena.coord)
+            print("  - Distance de l'arène: " .. tostring(distance))
+            print("  - Rayon arène: " .. tostring(arena.radius))
+        end
+    end
 end, false)
 
 -- =========================
